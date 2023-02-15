@@ -92,3 +92,51 @@ exports.getAllStuff = (req, res, next) => {
     }
   );
 };
+
+exports.likes = (req, res, next) => {
+  if (![1, -1, 0].includes(req.body.like)) 
+      return res.status(403).send({message: 'Valeur du like invalide !'});
+  Thing.findOne({_id: req.params.id})
+    .then((sauce) => {
+        if (req.body.like === 1) {
+          if (!sauce.usersLiked.includes(req.body.userId)) {
+            sauce.likes++
+            sauce.usersLiked.push(req.body.userId)
+            sauce.save()
+              .then(() => { res.status(201).json({message: 'Sauce liked'})})
+              .catch(error => { res.status(400).json( { error })})
+          }
+          else {
+            return res.status(400).json({message: 'Already liked'});
+          }
+        }
+        if (req.body.like === 0) {
+          sauce.likes--
+          sauce.usersLiked.splice(0, 1)
+          console.log(sauce.usersLiked)
+          //sauce.indexof(req.body.userId)
+          sauce.save()
+            .then(() => { res.status(201).json({message: 'Sauce unliked'})})
+            .catch(error => { res.status(400).json( { error })})
+        }
+        if (req.body.like === -1) {
+          if (!sauce.usersDisliked.includes(req.body.userId)) {
+            sauce.dislikes++
+            sauce.usersDisliked.push(req.body.userId)
+            sauce.save()
+              .then(() => { res.status(201).json({message: 'Sauce disliked'})})
+              .catch(error => { res.status(400).json( { error })})
+          }
+          else {
+            sauce.dislikes--
+            sauce.usersDisliked.splice(0, 1)
+            sauce.save()
+              .then(() => { res.status(201).json({message: 'Sauce undisliked'})})
+              .catch(error => { res.status(400).json( { error })})
+          }
+        }
+      })
+    .catch((error) => {
+        res.status(400).json({ error });
+    });
+}
