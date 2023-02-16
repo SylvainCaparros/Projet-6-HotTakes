@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
 const path = require('path');
+const helmet = require("helmet")
 
 const stuffRoutes = require('./routes/stuff');
 const userRoutes = require('./routes/user');
@@ -13,6 +14,8 @@ mongoose.connect('mongodb+srv://SylvainCa:gg011091@cluster0.igykjhv.mongodb.net/
   .catch((e) => console.log(e));
 
 const app = express()
+
+app.use(helmet());
 
 app.use(express.json())
 
